@@ -1,9 +1,9 @@
 name: Workflow to deploy OpenAI infrastructure to Azure
 
 on:
-  # push:
-  #   branches:
-  #     - main
+#   push:
+#     branches:
+#       - main
   pull_request:
     branches:
       - main
@@ -42,7 +42,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           
       - name: Deploy Open AI infrastructure action execution
-        uses: ./.github/actions/creativewriter
+        uses: ./.github/actions/azuresearchdemo
         with:
           location: ${{ vars.AZURE_LOCATION }}
           env-name: ${{ vars.AZURE_ENV_NAME }}

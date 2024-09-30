@@ -61,7 +61,18 @@ runs:
           dir
           mkdir orig-ai-repo
           cd orig-ai-repo
-          azd init -t Azure-Samples/azd init -t agent-openai-python-prompty -e ${{ inputs.env-name }}
+          azd init -t Azure-Samples/azure-search-openai-demo -e ${{ inputs.env-name }}
+
+          # modify main.parameters.json in template to take in open ai location as env var
+          $filePath = "infra/main.parameters.json"
+          $json = Get-Content -Raw -Path $filePath | ConvertFrom-Json    
+          $openAiEnvVar = @{
+            value = '${AZURE_OPENAI_LOCATION}'
+          }
+          if ($json.parameters) {
+              $json.parameters | Add-Member -Name "openAiResourceGroupLocation" -Value $openAiEnvVar -MemberType NoteProperty
+          }
+          $json | ConvertTo-Json -Depth 10 | Set-Content -Path $filePath
           
           # Get permissions
           azd auth login --client-id ${{ env.AZURE_CLIENT_ID }} --federated-credential-provider "github" --tenant-id ${{ env.AZURE_TENANT_ID }}
@@ -75,14 +86,44 @@ runs:
           # Set environment variables to answer prompts
           azd env set AZURE_LOCATION ${{ inputs.location }}
 
-          # Run prerequisites
-          cd src/api
-          pip install -r requirements.txt
-          
+          # Set open ai location if provided, else default to rg location
+          if ([string]::IsNullOrEmpty("${{ inputs.openai-location }}")) {
+            azd env set AZURE_OPENAI_LOCATION ${{ inputs.location }}
+          } else {
+            azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
+          }
+
+          # Set document intelligence location if provided, else default to rg location
+          if ([string]::IsNullOrEmpty("${{ inputs.documentintelligence-location }}")) {
+            azd env set AZURE_DOCUMENTINTELLIGENCE_LOCATION ${{ inputs.location }}
+          } else {
+            azd env set AZURE_DOCUMENTINTELLIGENCE_LOCATION ${{ inputs.documentintelligence-location }}
+          }
+        
+          # Set additional environment variables
+          if (-not [string]::IsNullOrEmpty($env:INPUT_ARGS)) {
+            $jsonObject = ConvertFrom-Json -InputObject $env:INPUT_ARGS -AsHashtable
+            foreach ($key in $jsonObject.Keys) {
+              $value = $jsonObject[$key]
+              azd env set $key $value
+            }
+          }
+          azd env get-values
+
+          # Bring your own data
+          $bringYourOwnData = [System.Convert]::ToBoolean($env:BRING_YOUR_OWN_DATA)
+          if ($bringYourOwnData -eq $true) {
+            Write-Output "The bring-your-own-data input is true."
+            if (Test-Path data) {
+              Remove-Item data -Recurse -Force
+            }
+            if (Test-Path ../${{ inputs.data-path }}) {
+              Copy-Item ../${{ inputs.data-path }} data -Recurse
+            }
+          }
+
           #Start the deployment
           azd up --no-prompt -e ${{ inputs.env-name }}
 
-          # Get AZD env variables
-          azd env get-values
 
         azPSVersion: "latest"

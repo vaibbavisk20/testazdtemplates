@@ -1,9 +1,9 @@
-name: Workflow to deploy contoso creative writer app
+name: Workflow to deploy quickstart chat app
 
 on:
-  # push:
-  #   branches:
-  #     - main
+#   push:
+#     branches:
+#       - main
   pull_request:
     branches:
       - main
@@ -42,7 +42,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           
       - name: Deploy Open AI infrastructure action execution
-        uses: ./.github/actions/creativewriter
+        uses: ./.github/actions/chatquickstart
         with:
           location: ${{ vars.AZURE_LOCATION }}
           env-name: ${{ vars.AZURE_ENV_NAME }}

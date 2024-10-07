@@ -67,13 +67,14 @@ runs:
           azd auth login --client-id ${{ env.AZURE_CLIENT_ID }} --federated-credential-provider "github" --tenant-id ${{ env.AZURE_TENANT_ID }}
           Get-AzAccessToken -ResourceUrl "https://vault.azure.net"
 
-          # Set requied environment variables
+          # Set required environment variables
           azd env set AZURE_SUBSCRIPTION_ID ${{ env.AZURE_SUBSCRIPTION_ID }}
           azd env set AZURE_PRINCIPAL_ID ${{ env.AZURE_PRINCIPAL_ID}}
           # azd env set AZURE_RESOURCE_GROUP ${{ env.AZURE_RG }}
 
           # Set environment variables to answer prompts
           azd env set AZURE_LOCATION ${{ inputs.location }}
+          azd env set AZURE_OPENAI_RESOURCE_LOCATION ${{ inputs.openai-location }}
 
           # Run prerequisites
           dir

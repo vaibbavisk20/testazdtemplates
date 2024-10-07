@@ -78,7 +78,7 @@ runs:
 
           # Run prerequisites
           dir
-          pip install -r requirements.txt
+          pip install -r requirements-dev.txt          
           python3 -m pip install -e src
           
           #Start the deployment

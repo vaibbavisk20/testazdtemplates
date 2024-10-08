@@ -74,7 +74,7 @@ runs:
 
           # Set environment variables to answer prompts
           azd env set AZURE_LOCATION ${{ inputs.location }}
-          azd env set AZURE_OPENAI_RESOURCE_LOCATION ${{ inputs.openai-location }}
+          azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
 
           # Run prerequisites
           dir

@@ -70,11 +70,12 @@ runs:
           # Set required environment variables
           azd env set AZURE_SUBSCRIPTION_ID ${{ env.AZURE_SUBSCRIPTION_ID }}
           azd env set AZURE_PRINCIPAL_ID ${{ env.AZURE_PRINCIPAL_ID}}
-          # azd env set AZURE_RESOURCE_GROUP ${{ env.AZURE_RG }}
+          azd env set AZURE_RESOURCE_GROUP ${{ env.AZURE_RG }}
 
           # Set environment variables to answer prompts
           azd env set AZURE_LOCATION ${{ inputs.location }}
           azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
+          azd env set GITHUB_ACTIONS true
 
           # Run prerequisites
           dir
